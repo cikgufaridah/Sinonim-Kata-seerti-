@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kuiz Interaktif Bahasa Melayu - Kata Seerti</title>
+<style>
+  :root{
+    --primary:#7c3aed; --secondary:#f59e0b; --good:#16a34a; --bad:#dc2626;
+    --bg1:#fdf2f8; --bg2:#eef2ff; --card:#ffffff; --text:#1f2937;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Comic Sans MS','Trebuchet MS',Arial,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);min-height:100vh;}
+  .wrap{max-width:980px;margin:0 auto;padding:22px;}
+  .card{background:rgba(255,255,255,.94);border:4px solid #e9d5ff;border-radius:26px;padding:24px;box-shadow:0 12px 30px rgba(124,58,237,.18);}
+  h1{font-size:2.1rem;text-align:center;margin:8px 0;color:#5b21b6;}
+  h2{margin:0 0 14px;color:#6d28d9}.center{text-align:center}.muted{color:#6b7280}.hidden{display:none!important}
+  .btn{border:0;border-radius:16px;padding:13px 20px;font-size:1rem;font-weight:700;cursor:pointer;background:var(--primary);color:white;box-shadow:0 6px 0 #4c1d95;margin:6px;}
+  .btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #4c1d95}.btn2{background:#0ea5e9;box-shadow:0 6px 0 #0369a1}.btn3{background:#10b981;box-shadow:0 6px 0 #047857}.btn4{background:#ef4444;box-shadow:0 6px 0 #991b1b}
+  input{width:100%;padding:15px;border:3px solid #c4b5fd;border-radius:16px;font-size:1.1rem;margin:10px 0;background:#fff}.small-input{max-width:360px}
+  .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}.pill{background:#ede9fe;border:2px solid #c4b5fd;border-radius:999px;padding:10px 14px;font-weight:800;color:#4c1d95}.timer{font-size:1.3rem;background:#fef3c7;border-color:#fbbf24;color:#92400e}.qbox{font-size:1.45rem;line-height:1.8;background:#f8fafc;border:3px dashed #a78bfa;border-radius:22px;padding:22px;margin:16px 0}.target{font-weight:900;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;color:#be123c}.blank{font-weight:bold;color:#7c3aed}.feedback{font-size:1.25rem;font-weight:900;min-height:34px;margin:10px 0}.correct{color:var(--good)}.wrong{color:var(--bad)}.progress{height:18px;background:#e5e7eb;border-radius:99px;overflow:hidden;border:2px solid #c4b5fd}.bar{height:100%;width:0;background:linear-gradient(90deg,#8b5cf6,#f59e0b);transition:.3s}.scorebig{font-size:3.5rem;font-weight:900;color:#7c3aed}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;background:white;border-radius:14px;overflow:hidden}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#ede9fe;color:#4c1d95}tr:nth-child(even){background:#fafafa}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:bold}.pass{background:#dcfce7;color:#166534}.fail{background:#fee2e2;color:#991b1b}.footer{text-align:center;margin-top:16px;font-size:.9rem;color:#6b7280}.cloud{position:fixed;border-radius:50%;opacity:.25;z-index:-1}.c1{width:180px;height:180px;background:#f0abfc;top:30px;left:30px}.c2{width:240px;height:240px;background:#93c5fd;bottom:40px;right:60px}.confetti{position:fixed;top:-20px;width:10px;height:16px;animation:fall 1.8s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+  @media(max-width:650px){h1{font-size:1.5rem}.qbox{font-size:1.15rem}.wrap{padding:12px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<div class="cloud c1"></div><div class="cloud c2"></div>
+<div class="wrap">
+  <div class="card" id="startScreen">
+    <h1>🌟 Kuiz Interaktif Bahasa Melayu 🌟</h1>
+    <div class="center"><h2>Kata Seerti / Sinonim</h2><p class="muted">Tahun 5 dan Tahun 6 • Isi tempat kosong • 20 soalan • 10 saat setiap soalan</p></div>
+    <label>Nama murid:</label><input id="studentName" class="small-input" placeholder="Taip nama kamu di sini" />
+    <div class="center"><button class="btn btn3" onclick="startQuiz()">KLIK UNTUK MULA</button><button class="btn btn2" onclick="openTeacherLogin()">Panel Guru</button></div>
+    <p class="footer">Arahan: Isi kata seerti bagi perkataan yang ditebalkan dan digariskan.</p>
+  </div>
+
+  <div class="card hidden" id="quizScreen">
+    <div class="topbar"><div class="pill" id="qNo">Soalan 1/20</div><div class="pill">Markah: <span id="score">0</span></div><div class="pill timer">⏱️ <span id="time">10</span>s</div></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="qbox" id="questionText"></div>
+    <input id="answerInput" placeholder="Taip jawapan di sini..." autocomplete="off" onkeydown="if(event.key==='Enter')checkAnswer()" />
+    <div class="feedback" id="feedback"></div>
+    <div class="center"><button class="btn" onclick="checkAnswer()">Hantar Jawapan</button><button class="btn btn2" onclick="skipQuestion()">Langkau</button></div>
+  </div>
+
+  <div class="card hidden center" id="resultScreen">
+    <h1>🎉 Keputusan Kuiz 🎉</h1>
+    <p>Nama: <b id="resultName"></b></p>
+    <div class="scorebig"><span id="finalScore"></span>/20</div>
+    <p id="resultMsg"></p>
+    <button class="btn btn3" onclick="restartQuiz()">Main Semula</button><button class="btn btn2" onclick="openTeacherLogin()">Panel Guru</button>
+  </div>
+
+  <div class="card hidden" id="teacherLogin">
+    <h1>🔐 Panel Guru</h1>
+    <p class="center muted">Masukkan kata laluan guru.</p>
+    <input id="teacherPass" class="small-input" type="password" placeholder="Password" />
+    <div class="center"><button class="btn" onclick="checkTeacherPass()">Buka Panel</button><button class="btn btn4" onclick="backHome()">Kembali</button></div>
+    <div class="feedback center" id="loginMsg"></div>
+  </div>
+
+  <div class="card hidden" id="teacherPanel">
+    <h1>📊 Panel Markah Murid</h1>
+    <div class="center"><button class="btn btn2" onclick="downloadCSV()">Muat Turun CSV</button><button class="btn btn4" onclick="clearRecords()">Padam Rekod</button><button class="btn" onclick="backHome()">Kembali</button></div>
+    <div class="tablewrap"><table><thead><tr><th>Bil.</th><th>Nama</th><th>Markah</th><th>Peratus</th><th>Status</th><th>Tarikh/Masa</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+  </div>
+</div>
+<script>
+const PASSWORD = '207207';
+const questions = [
+ {q:'Tolong <span class="target">ampunkan</span> ( <span class="blank">__________________________</span> ) dia sekali ini.', ans:['maafkan']},
+ {q:'Angin Katrina sangat <span class="target">kencang</span> ( <span class="blank">______________________</span> ) melanda Florida.', ans:['deras','kuat']},
+ {q:'Ibu Mizam menyeberangi sungai itu dengan <span class="target">sampan</span>. ( <span class="blank">____________________________</span> )', ans:['perahu']},
+ {q:'Selepas makan kita hendaklah <span class="target">gosok</span> ( <span class="blank">____________________</span> ) gigi.', ans:['berus']},
+ {q:'Barang lama itu <span class="target">ditaruh</span> ( <span class="blank">______________________________</span> ) dalam bilik stor.', ans:['disimpan','simpan']},
+ {q:'Rumah Amsyar <span class="target">hampir</span> ( <span class="blank">___________________________</span> ) dengan sekolahnya.', ans:['dekat']},
+ {q:'Dia telah <span class="target">ditanya</span> ( <span class="blank">_________________________</span> ) oleh orang tua itu.', ans:['disoal']},
+ {q:'Setelah <span class="target">selesai</span> ( <span class="blank">____________________</span> ) memasak ibu membasuh piring.', ans:['habis']},
+ {q:'Kalau mahu maju janganlah <span class="target">jemu</span> ( <span class="blank">_______________________</span> ) untuk belajar.', ans:['bosan']},
+ {q:'Menjaga harta-benda kerajaan adalah sangat <span class="target">mustahak</span>. ( <span class="blank">________________________</span> )', ans:['penting']},
+ {q:'<span class="target">Berita</span> ( <span class="blank">__________________</span> ) mengenai kes kecurian di kedai itu adalah palsu.', ans:['khabar','kabar']},
+ {q:'Arafat <span class="target">kagum</span> ( <span class="blank">_____________________</span> ) melihat kecantikan Masjid Omar Ali Saifuddien itu.', ans:['takjub','terpesona','hairan']},
+ {q:'Ketua kampong menasihati anak buahnya supaya tidak terpedaya dengan muslihat <span class="target">bomoh</span>. ( <span class="blank">____________________________</span> )', ans:['dukun']},
+ {q:'Perniagaan ayam segar Pakcik Sahibul itu memperolehi <span class="target">keuntungan</span>. ( <span class="blank">______________________</span> )', ans:['faedah','laba']},
+ {q:'Punca kebakaran kedai itu masih <span class="target">diselidiki</span> ( <span class="blank">_________________________</span> ).', ans:['disiasat']},
+ {q:'“Cuba kamu <span class="target">kira</span> ( <span class="blank">_______________</span> ) anak-anak ayam di dalam reban itu,” kata ayah kepada saya.', ans:['hitung','bilang']},
+ {q:'Kerbau yang berkeliaran itu sering <span class="target">merosakkan</span> ( <span class="blank">___________________________</span> ) tanaman penduduk kampong.', ans:['membinasakan']},
+ {q:'Pegawai-pegawai kerajaan dikehendaki bersikap <span class="target">jujur</span> ( <span class="blank">________________________</span> ) dalam menjalankan tugas.', ans:['ikhlas','amanah']},
+ {q:'Ketua rombongan itu menyatakan <span class="target">tujuan</span> ( <span class="blank">_______________________</span> ) mereka datang ke rumah kami.', ans:['hajat']},
+ {q:'Guru tidak suka murid yang selalu <span class="target">menggangu</span> ( <span class="blank">__________________</span> ) orang lain.', ans:['mengusik','mengacau']}
+];
+let current=0, score=0, timer=null, timeLeft=10, answered=false, student='';
+function norm(s){return (s||'').toLowerCase().trim().replace(/\s+/g,' ').replace(/[.,!?;:"'()]/g,'');}
+function beep(type){try{const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.type=type==='good'?'triangle':'sawtooth'; o.frequency.value=type==='good'?720:180; g.gain.setValueAtTime(.001,ctx.currentTime); g.gain.exponentialRampToValueAtTime(.25,ctx.currentTime+.02); g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.25); o.start(); o.stop(ctx.currentTime+.27);}catch(e){}}
+function show(id){['startScreen','quizScreen','resultScreen','teacherLogin','teacherPanel'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+function startQuiz(){student=document.getElementById('studentName').value.trim()||'Murid';current=0;score=0;show('quizScreen');loadQuestion();}
+function loadQuestion(){answered=false; timeLeft=10; document.getElementById('feedback').textContent=''; document.getElementById('answerInput').value=''; document.getElementById('answerInput').disabled=false; document.getElementById('answerInput').focus(); document.getElementById('qNo').textContent=`Soalan ${current+1}/20`; document.getElementById('score').textContent=score; document.getElementById('bar').style.width=((current)/questions.length*100)+'%'; document.getElementById('questionText').innerHTML=questions[current].q; document.getElementById('time').textContent=timeLeft; clearInterval(timer); timer=setInterval(()=>{timeLeft--; document.getElementById('time').textContent=timeLeft; if(timeLeft<=0){clearInterval(timer); mark(false,'Masa tamat! Jawapan: '+questions[current].ans.join(' / '));}},1000);}
+function checkAnswer(){if(answered)return; const user=norm(document.getElementById('answerInput').value); const ok=questions[current].ans.some(a=>norm(a)===user); mark(ok, ok?'Betul! Hebat!':'Salah. Jawapan: '+questions[current].ans.join(' / '));}
+function skipQuestion(){if(answered)return; mark(false,'Dilangkau. Jawapan: '+questions[current].ans.join(' / '));}
+function mark(ok,msg){answered=true; clearInterval(timer); document.getElementById('answerInput').disabled=true; const fb=document.getElementById('feedback'); fb.textContent=msg; fb.className='feedback '+(ok?'correct':'wrong'); if(ok){score++; beep('good'); confetti();}else{beep('bad');} setTimeout(()=>{current++; if(current<questions.length)loadQuestion(); else finishQuiz();},1300);}
+function finishQuiz(){document.getElementById('bar').style.width='100%'; show('resultScreen'); document.getElementById('resultName').textContent=student; document.getElementById('finalScore').textContent=score; let pct=Math.round(score/questions.length*100); document.getElementById('resultMsg').textContent=pct>=80?'Tahniah! Pencapaian sangat baik.':pct>=50?'Bagus. Teruskan ulang kaji.':'Terus berusaha. Cuba lagi selepas ulang kaji.'; saveRecord(student,score,pct);}
+function saveRecord(name,marks,pct){let rec=JSON.parse(localStorage.getItem('bmQuizRecords')||'[]'); rec.push({name,marks,pct,date:new Date().toLocaleString('ms-BN')}); localStorage.setItem('bmQuizRecords',JSON.stringify(rec));}
+function restartQuiz(){show('startScreen')}
+function openTeacherLogin(){show('teacherLogin');document.getElementById('teacherPass').value='';document.getElementById('loginMsg').textContent='';}
+function checkTeacherPass(){if(document.getElementById('teacherPass').value===PASSWORD){showTeacherPanel()}else{document.getElementById('loginMsg').textContent='Kata laluan salah.';document.getElementById('loginMsg').className='feedback center wrong';}}
+function showTeacherPanel(){show('teacherPanel');let rec=JSON.parse(localStorage.getItem('bmQuizRecords')||'[]');let body=document.getElementById('recordsBody');body.innerHTML=''; if(rec.length===0){body.innerHTML='<tr><td colspan="6" class="center">Belum ada rekod markah.</td></tr>';return;} rec.forEach((r,i)=>{body.innerHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.marks}/20</td><td>${r.pct}%</td><td><span class="badge ${r.pct>=50?'pass':'fail'}">${r.pct>=50?'Lulus':'Perlu bimbingan'}</span></td><td>${r.date}</td></tr>`});}
+function backHome(){show('startScreen')}
+function clearRecords(){if(confirm('Padam semua rekod markah?')){localStorage.removeItem('bmQuizRecords');showTeacherPanel();}}
+function downloadCSV(){let rec=JSON.parse(localStorage.getItem('bmQuizRecords')||'[]');let csv='Bil,Nama,Markah,Peratus,Tarikh/Masa\n';rec.forEach((r,i)=>csv+=`${i+1},"${r.name}",${r.marks}/20,${r.pct}%,"${r.date}"\n`);let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='markah_kuiz_bm.csv';a.click();}
+function confetti(){for(let i=0;i<22;i++){let d=document.createElement('div');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=['#f59e0b','#8b5cf6','#22c55e','#ef4444','#06b6d4'][Math.floor(Math.random()*5)];d.style.animationDelay=Math.random()*.2+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),2100)}}
+</script>
+</body>
+</html>
