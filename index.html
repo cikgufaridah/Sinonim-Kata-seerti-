@@ -98,7 +98,16 @@ function checkAnswer(){if(answered)return; const user=norm(document.getElementBy
 function skipQuestion(){if(answered)return; mark(false,'Dilangkau. Jawapan: '+questions[current].ans.join(' / '));}
 function mark(ok,msg){answered=true; clearInterval(timer); document.getElementById('answerInput').disabled=true; const fb=document.getElementById('feedback'); fb.textContent=msg; fb.className='feedback '+(ok?'correct':'wrong'); if(ok){score++; beep('good'); confetti();}else{beep('bad');} setTimeout(()=>{current++; if(current<questions.length)loadQuestion(); else finishQuiz();},1300);}
 function finishQuiz(){document.getElementById('bar').style.width='100%'; show('resultScreen'); document.getElementById('resultName').textContent=student; document.getElementById('finalScore').textContent=score; let pct=Math.round(score/questions.length*100); document.getElementById('resultMsg').textContent=pct>=80?'Tahniah! Pencapaian sangat baik.':pct>=50?'Bagus. Teruskan ulang kaji.':'Terus berusaha. Cuba lagi selepas ulang kaji.'; saveRecord(student,score,pct);}
-function saveRecord(name,marks,pct){let rec=JSON.parse(localStorage.getItem('bmQuizRecords')||'[]'); rec.push({name,marks,pct,date:new Date().toLocaleString('ms-BN')}); localStorage.setItem('bmQuizRecords',JSON.stringify(rec));}
+function saveRecord(name,marks,pct){ fetch("https://script.google.com/macros/s/AKfycbziKfHLqlvKUJT0MErPpqPGaBvk7g_Hnqjj1DsDW4HaEdjuQ2u_0EfSRVjikWa83-gK2Q/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      nama: name,
+      kelas: "Tahun 5/6",
+      markah: marks + "/20"
+    })
+  });
+
+}
 function restartQuiz(){show('startScreen')}
 function openTeacherLogin(){show('teacherLogin');document.getElementById('teacherPass').value='';document.getElementById('loginMsg').textContent='';}
 function checkTeacherPass(){if(document.getElementById('teacherPass').value===PASSWORD){showTeacherPanel()}else{document.getElementById('loginMsg').textContent='Kata laluan salah.';document.getElementById('loginMsg').className='feedback center wrong';}}
